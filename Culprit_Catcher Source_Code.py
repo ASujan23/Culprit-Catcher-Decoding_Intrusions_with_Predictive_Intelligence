@@ -19,7 +19,7 @@ LOG_FILE = "security_log.txt"
 INTRUDER_FOLDER = "Intruders"
 EMAIL_ADDRESS = "your_email@example.com"
 EMAIL_PASSWORD = "your_email_password"
-PHONE_NUMBER = "+919999999999"
+PHONE_NUMBER = "+91XXXXXXXXXX"
 
 # Initialize FaceNet and HaarCascade
 HaarCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -44,15 +44,15 @@ def save_intruder(image):
 def send_alert():
     try:
         # Using pywhatkit to send a WhatsApp message without opening the web window
-        pywhatkit.sendwhatmsg_instantly(PHONE_NUMBER, '⚠️ ALERT: Unrecognized person detected!', tab_close=True)
-        print("✅ WhatsApp alert sent!")
+        pywhatkit.sendwhatmsg_instantly(PHONE_NUMBER, ' ALERT: Unrecognized person detected!', tab_close=True)
+        print("WhatsApp alert sent!")
         log_event("WhatsApp alert sent.")
     except Exception as e:
-        print(f"❌ WhatsApp alert failed: {e}")
+        print(f"WhatsApp alert failed: {e}")
 
 def send_email_alert(image_path):
     msg = EmailMessage()
-    msg["Subject"] = "⚠️ Security Alert: Unrecognized Person Detected!"
+    msg["Subject"] = "Security Alert: Unrecognized Person Detected!"
     msg["From"] = EMAIL_ADDRESS
     msg["To"] = "security_team@example.com"
     msg.set_content("An unrecognized person was detected. See attached image.")
@@ -62,10 +62,10 @@ def send_email_alert(image_path):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
             server.send_message(msg)
-        print("✅ Email alert sent!")
+        print("Email alert sent!")
         log_event("Email alert sent.")
     except Exception as e:
-        print(f"❌ Email alert failed: {e}")
+        print(f"Email alert failed: {e}")
 
 def play_warning():
     tts = gTTS("Warning! You are not authorized to enter!", lang="en")
@@ -102,7 +102,7 @@ def create_database(base_folder):
                 try:
                     database[person] = np.mean(np.array(embeddings), axis=0)
                 except ValueError as e:
-                    print(f"⚠️ Error processing {person}: {e}")
+                    print(f"Error processing {person}: {e}")
                     log_event(f"Error processing {person}: {e}")
 
     return database
@@ -138,22 +138,22 @@ try:
                 for embedding in embeddings:
                     name = identify_face(database, embedding)
                     if name:
-                        print(f"✅ {name} is authorized.")
+                        print(f"{name} is authorized.")
                         log_event(f"Authorized: {name}")
                         authorized_found = True
                         break
                 if not authorized_found:
-                    print("⛔ Unrecognized face detected! Sending alert...")
+                    print("Unrecognized face detected! Sending alert...")
                     img_path = save_intruder(frame)
                     send_alert()  # WhatsApp alert without window
                     send_email_alert(img_path)
                     play_warning()  # Play warning sound
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            print("🛑 Exiting monitoring...")
+            print("Exiting monitoring...")
             break
 except KeyboardInterrupt:
-    print("\n🛑 Stopped manually.")
+    print("\nStopped manually.")
 finally:
     camera.release()
     cv2.destroyAllWindows()
-    print("✅ Camera released. Monitoring stopped.")
+    print("Camera released. Monitoring stopped.")
